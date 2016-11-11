@@ -13,7 +13,7 @@ def stdev(numbers):
     return math.sqrt(variance)
 
 
-#split the data randomly into training/testing sets
+# split the data randomly into training/testing sets
 def splitDataset(dataset, splitRatio):
     trainSize = int(len(dataset) * splitRatio)
     trainSet = []
@@ -24,12 +24,12 @@ def splitDataset(dataset, splitRatio):
     return [trainSet, copy]
 
 
-#returns the dataset split according to class, by iterating over each row and checking its class, then appending the matching list in the separated dictionary with it
+# returns the dataset split according to class, by iterating over each row and checking its class, then appending the matching list in the separated dictionary with it
 def separateByClass(dataset):
     separated = {}
     for i in range(len(dataset)):
         vector = dataset[i]
-        if (vector[-1] not in separated):
+        if vector[-1] not in separated:
             separated[vector[-1]] = []
         separated[vector[-1]].append(vector)
     return separated
@@ -50,3 +50,71 @@ def summarizeByClass(dataset):
     for classValue, instances in separated.iteritems():
         summaries[classValue] = summarize(instances)
     return summaries
+
+
+def calculateProbability(x, mean, stdev):
+    exponent = math.exp(-(math.pow(x - mean, 2) / (2 * math.pow(stdev, 2))))
+    return (1 / (math.sqrt(2 * math.pi) * stdev)) * exponent
+
+
+def calculateClassProbabilities(summaries, inputVector):
+    probabilities = {}
+    for classValue, classSummaries in summaries.iteritems():
+        probabilities[classValue] = 1
+        for i in range(len(classSummaries)):
+            mean, stdev = classSummaries[i]
+            x = inputVector[i]
+            probabilities[classValue] *= calculateProbability(x, mean, stdev)
+    return probabilities
+
+
+def predict(summaries, inputVector):
+    probabilities = calculateClassProbabilities(summaries, inputVector)
+    bestLabel, bestProb = None, 0
+    for classValue, probability in probabilities.iteritems():
+        if bestLabel is None or probability > bestProb:
+            bestProb = probability
+            bestLabel = classValue
+
+    return bestLabel
+
+
+def getProbs(summaries, inputVector):
+    probabilities = calculateClassProbabilities(summaries, inputVector)
+    chances = []
+    sumOfProbs = 0
+    for classValue, probability in probabilities.iteritems():
+        sumOfProbs += probability
+
+    for classValue, probability in probabilities.iteritems():
+        prob = (probability / sumOfProbs) * 100
+        chances.append(round(prob, 2))
+    return chances
+
+
+def getClass(summaries, inputVector):
+    bestLabel = predict(summaries, inputVector)
+
+    if (bestLabel == 0.0):
+        bestValue = "iris-setosa"
+    elif (bestLabel == 1.0):
+        bestValue = "Iris-versicolor"
+    elif (bestLabel == 2.0):
+        bestValue = "Iris-virginica"
+    return bestValue
+
+
+def getPredictions(summaries, testSet):
+    predictions = []
+    for i in range(len(testSet)):
+        result = predict(summaries, testSet[i])
+        predictions.append(result)
+    return predictions
+
+
+def getAccuracy(testSet, predictions):
+    correct = 0
+    for x in range(len(testSet)):
+        if testSet[x][-1] == predictions[x]:
+            correct += 1
+    return (correct / float(len(testSet))) * 100.0

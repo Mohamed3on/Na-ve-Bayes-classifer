@@ -13,14 +13,15 @@ def stdev(numbers):
     return math.sqrt(variance)
 
 
-# split the data randomly into training/testing sets
+# split the data randomly into training/testing sets according to a given ratio
 def splitDataset(dataset, splitRatio):
     trainSize = int(len(dataset) * splitRatio)
     trainSet = []
     copy = list(dataset)
     while len(trainSet) < trainSize:
-        index = random.randrange(len(copy))
-        trainSet.append(copy.pop(index))
+        index = random.randrange(len(copy))  # get a random row
+        trainSet.append(copy.pop(
+            index))  # deletes the row from the dataset and appends it to the training set, the undeleted ones are the test sets
     return [trainSet, copy]
 
 
@@ -29,16 +30,18 @@ def separateByClass(dataset):
     separated = {}
     for i in range(len(dataset)):
         vector = dataset[i]
-        if vector[-1] not in separated:
+        if vector[
+            -1] not in separated:  #negative indices mean counting from the left, so in this line it looks at the last item (class value)
             separated[vector[-1]] = []
-        separated[vector[-1]].append(vector)
+        separated[vector[-1]].append(vector)  #add this row to its corresponding class
     return separated
 
 
 # the zip(*dataset) function returns multiple arrays, one for each attribute.
 # we delete the last array because it's for the class value
 def summarize(dataset):
-    summaries = [(mean(attribute), stdev(attribute)) for attribute in zip(*dataset)]
+    summaries = [(mean(attribute), stdev(attribute)) for attribute in zip(
+        *dataset)]  #for each attribute, save its mean and st. deviation in the summaries matrix, then delete the last summary (class)
     del summaries[-1]
     return summaries
 
@@ -48,15 +51,18 @@ def summarizeByClass(dataset):
     separated = separateByClass(dataset)
     summaries = {}
     for classValue, instances in separated.iteritems():
-        summaries[classValue] = summarize(instances)
+        summaries[classValue] = summarize(
+            instances)  #this creates a matrix containing the summaries of attributes for each class
     return summaries
 
 
+#this calculates the gaussian probability of a given point
 def calculateProbability(x, mean, stdev):
     exponent = math.exp(-(math.pow(x - mean, 2) / (2 * math.pow(stdev, 2))))
     return (1 / (math.sqrt(2 * math.pi) * stdev)) * exponent
 
 
+#this calculates the probability that a given input belongs to each class, and returns them as an array (this is the classifier)
 def calculateClassProbabilities(summaries, inputVector):
     probabilities = {}
     for classValue, classSummaries in summaries.iteritems():
@@ -68,6 +74,7 @@ def calculateClassProbabilities(summaries, inputVector):
     return probabilities
 
 
+#this takes the probabilites and returns the class with the highest one
 def predict(summaries, inputVector):
     probabilities = calculateClassProbabilities(summaries, inputVector)
     bestLabel, bestProb = None, 0
@@ -79,6 +86,7 @@ def predict(summaries, inputVector):
     return bestLabel
 
 
+#this gets the percentage for a given row that it belongs to each class, by dividing its probability over the sum of all probabilites
 def getProbs(summaries, inputVector):
     probabilities = calculateClassProbabilities(summaries, inputVector)
     chances = []
@@ -92,6 +100,7 @@ def getProbs(summaries, inputVector):
     return chances
 
 
+#this returns a class's name, instead of its number
 def getClass(summaries, inputVector):
     bestLabel = predict(summaries, inputVector)
 
@@ -104,6 +113,7 @@ def getClass(summaries, inputVector):
     return bestValue
 
 
+#gets predictions for the whole test set
 def getPredictions(summaries, testSet):
     predictions = []
     for i in range(len(testSet)):
@@ -112,6 +122,7 @@ def getPredictions(summaries, testSet):
     return predictions
 
 
+#get the accuracy of your predictions
 def getAccuracy(testSet, predictions):
     correct = 0
     for x in range(len(testSet)):

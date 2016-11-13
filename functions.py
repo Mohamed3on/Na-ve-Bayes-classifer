@@ -20,12 +20,16 @@ def splitDataset(dataset, splitRatio):
     copy = list(dataset)
     while len(trainSet) < trainSize:
         index = random.randrange(len(copy))  # get a random row
-        trainSet.append(copy.pop(
-            index))  # deletes the row from the dataset and appends it to the training set, the undeleted ones are the test sets
+ # deletes the row from the dataset and appends it to the training set
+ # the undeleted ones are the test sets
+        trainSet.append(copy.pop(index)) 
+
     return [trainSet, copy]
 
 
-# returns the dataset split according to class, by iterating over each row and checking its class, then appending the matching list in the separated dictionary with it
+# returns the dataset split according to class, by iterating over each row
+# and checking its class
+# then appending the matching list in the separated dictionary with it
 def separateByClass(dataset):
     separated = {}
     for i in range(len(dataset)):
@@ -41,7 +45,9 @@ def separateByClass(dataset):
 # we delete the last array because it's for the class value
 def summarize(dataset):
     summaries = [(mean(attribute), stdev(attribute)) for attribute in zip(
-        *dataset)]  #for each attribute, save its mean and st. deviation in the summaries matrix, then delete the last summary (class)
+        *dataset)]
+ #for each attribute, save its mean and st. deviation in the summaries matrix
+ # then delete the last summary (class)
     del summaries[-1]
     return summaries
 

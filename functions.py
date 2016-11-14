@@ -22,7 +22,7 @@ def splitDataset(dataset, splitRatio):
         index = random.randrange(len(copy))  # get a random row
  # deletes the row from the dataset and appends it to the training set
  # the undeleted ones are the test sets
-        trainSet.append(copy.pop(index)) 
+        trainSet.append(copy.pop(index))
 
     return [trainSet, copy]
 
@@ -34,10 +34,12 @@ def separateByClass(dataset):
     separated = {}
     for i in range(len(dataset)):
         vector = dataset[i]
-        if vector[
-            -1] not in separated:  #negative indices mean counting from the left, so in this line it looks at the last item (class value)
+        if vector[-1] not in separated:
+#negative indices mean counting from the left,
+ # so in this line it looks at the last item (class value)
             separated[vector[-1]] = []
-        separated[vector[-1]].append(vector)  #add this row to its corresponding class
+             #add this row to its corresponding class
+        separated[vector[-1]].append(vector)
     return separated
 
 
@@ -45,7 +47,7 @@ def separateByClass(dataset):
 # we delete the last array because it's for the class value
 def summarize(dataset):
     summaries = [(mean(attribute), stdev(attribute)) for attribute in zip(
-        *dataset)]
+    *dataset)]
  #for each attribute, save its mean and st. deviation in the summaries matrix
  # then delete the last summary (class)
     del summaries[-1]
@@ -56,9 +58,9 @@ def summarize(dataset):
 def summarizeByClass(dataset):
     separated = separateByClass(dataset)
     summaries = {}
+ #this creates a matrix containing the summaries of attributes for each class
     for classValue, instances in separated.iteritems():
-        summaries[classValue] = summarize(
-            instances)  #this creates a matrix containing the summaries of attributes for each class
+        summaries[classValue] = summarize(instances)
     return summaries
 
 
@@ -68,7 +70,8 @@ def calculateProbability(x, mean, stdev):
     return (1 / (math.sqrt(2 * math.pi) * stdev)) * exponent
 
 
-#this calculates the probability that a given input belongs to each class, and returns them as an array (this is the classifier)
+#this calculates the probability that a given input belongs to each class,
+# and returns them as an array (this is the classifier)
 def calculateClassProbabilities(summaries, inputVector):
     probabilities = {}
     for classValue, classSummaries in summaries.iteritems():
@@ -92,7 +95,8 @@ def predict(summaries, inputVector):
     return bestLabel
 
 
-#this gets the percentage for a given row that it belongs to each class, by dividing its probability over the sum of all probabilites
+#this gets the percentage for a given row that it belongs to each class,
+# by dividing its probability over the sum of all probabilites
 def getProbs(summaries, inputVector):
     probabilities = calculateClassProbabilities(summaries, inputVector)
     chances = []

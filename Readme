@@ -1,1 +1,2 @@
 To run the script, you should have Python 2.7.x installed, and also the packages scipy,numpy and sklearn. After installing them, run Naive.py
+To find more info about how the classifier was built, check this post: http://geekegy.blogspot.com/2016/11/building-naive-bayes-classifier.html
